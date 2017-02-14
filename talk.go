@@ -7,9 +7,9 @@ import (
 
 // Talk talk struct
 type Talk struct {
-	Name     string // topic and time
-	Duration int
-	Status   bool // isSchedule
+	Topic      string // topic and time
+	Duration   int
+	IsSchedule bool
 }
 
 // Talks talk slice
@@ -23,7 +23,7 @@ func fillTalks(data []byte) (talks Talks, err error) {
 	lines := strings.Split(string(data), "\n")
 	talks = make(Talks, len(lines)-1)
 	for i := range talks {
-		talks[i] = Talk{Name: lines[i]}
+		talks[i] = Talk{Topic: lines[i]}
 		timeStr := lines[i][strings.LastIndex(lines[i], " ")+1:]
 		if strings.Contains(timeStr, "min") {
 			talks[i].Duration, err = strconv.Atoi(timeStr[:len(timeStr)-3])
@@ -35,4 +35,12 @@ func fillTalks(data []byte) (talks Talks, err error) {
 		}
 	}
 	return talks, nil
+}
+
+func (talks Talks) getTotalDuration() int {
+	var totalDuration int
+	for _, talk := range talks {
+		totalDuration += talk.Duration
+	}
+	return totalDuration
 }

@@ -1,21 +1,24 @@
 package main
 
-import (
-	"fmt"
-	"os"
-
-	log "github.com/Sirupsen/logrus"
-)
+import log "github.com/Sirupsen/logrus"
 
 func main() {
-	data, err := loadFile("input.txt")
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+	scheduleConference("input.txt")
+}
+
+func scheduleConference(filePath string) {
+	data, err := loadFile(filePath)
 	if err != nil {
-		log.Errorf("load File fail : %s", err)
-		os.Exit(1)
+		panic(err)
 	}
 	talks, err := fillTalks(data)
 	if err != nil {
-		log.Errorf("fill talks fail : %s", err)
+		panic(err)
 	}
-	fmt.Println(talks)
+	getScheduleConferences(talks)
 }
