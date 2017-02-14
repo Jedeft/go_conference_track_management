@@ -20,5 +20,6 @@ func scheduleConference(filePath string) {
 	if err != nil {
 		panic(err)
 	}
-	getScheduleConferences(talks)
+	conferences := getScheduleConferences(talks)
+	conferences.output()
 }

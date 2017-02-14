@@ -1,6 +1,10 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"time"
+)
 
 // Conference conference struct
 type Conference struct {
@@ -21,10 +25,8 @@ func getScheduleConferences(talks Talks) Conferences {
 	totalDuration := talks.getTotalDuration()
 	totalDay := totalDuration/dayMaxDuration + 1
 	conferences := make(Conferences, totalDay)
-	for i := 0; i < totalDay; i++ {
-		conferences.setMorningSession(talks)
-		conferences.setAfternoonSession(talks)
-	}
+	conferences.setMorningSession(talks)
+	conferences.setAfternoonSession(talks)
 	if !talks.isSchedule() {
 		conferences.checkSession(talks)
 		if !talks.isSchedule() {
@@ -55,7 +57,7 @@ func (conferences Conferences) setMorningSession(talks Talks) {
 					break
 				}
 			}
-			if totalDuration == morningSession.getTotalDuration() {
+			if totalDuration == sessionMinDuration {
 				conferences[ci].MorningSession = morningSession
 				talks.setSchedule(morningSession)
 				break
@@ -98,10 +100,31 @@ func (conferences Conferences) setAfternoonSession(talks Talks) {
 func (conferences Conferences) checkSession(talks Talks) {
 	for ci := range conferences {
 		for _, talk := range talks {
+			if talk.IsSchedule {
+				continue
+			}
 			if conferences[ci].AfternoonSession.getTotalDuration()+talk.Duration <= sessionMaxDuration {
 				conferences[ci].AfternoonSession = append(conferences[ci].AfternoonSession, talk)
 				talks.setSchedule(Talks{talk})
 			}
 		}
+	}
+}
+
+func (conferences Conferences) output() {
+	for i, conference := range conferences {
+		date, _ := time.ParseInLocation("2006-01-02 15:04:05", "2017-02-14 09:00:00", time.Local)
+		fmt.Printf("Track %d :\n", i+1)
+		for _, talk := range conference.MorningSession {
+			fmt.Printf("%sAM %s\n", date.Format("15:04"), talk.Topic)
+			date = date.Add(time.Duration(talk.Duration) * time.Minute)
+		}
+		fmt.Printf("12:00PM Lunch\n")
+		date = date.Add(time.Hour)
+		for _, talk := range conference.AfternoonSession {
+			fmt.Printf("%sPM %s\n", date.Format("15:04"), talk.Topic)
+			date = date.Add(time.Duration(talk.Duration) * time.Minute)
+		}
+		fmt.Printf("05:00PM Networking Event\n\n")
 	}
 }
