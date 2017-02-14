@@ -1,6 +1,11 @@
 package main
 
-import log "github.com/Sirupsen/logrus"
+import (
+	"fmt"
+	"os"
+
+	log "github.com/Sirupsen/logrus"
+)
 
 func main() {
 	defer func() {
@@ -8,7 +13,11 @@ func main() {
 			log.Error(err)
 		}
 	}()
-	scheduleConference("input.txt")
+	if len(os.Args) < 2 {
+		fmt.Println("Please input one fileName")
+		os.Exit(1)
+	}
+	scheduleConference(os.Args[1])
 }
 
 func scheduleConference(filePath string) {
