@@ -50,9 +50,19 @@ func (talks Talks) setSchedule(scheduleTalks Talks) {
 	for _, scheduleTalk := range scheduleTalks {
 		scheduleMap[scheduleTalk.Topic] = true
 	}
-	for _, talk := range talks {
-		if _, exist := scheduleMap[talk.Topic]; exist {
-			talk.IsSchedule = true
+	for ti := range talks {
+		if _, exist := scheduleMap[talks[ti].Topic]; exist {
+			talks[ti].IsSchedule = true
 		}
 	}
+}
+
+// isSchedule all talk isSchedule
+func (talks Talks) isSchedule() bool {
+	for _, talk := range talks {
+		if !talk.IsSchedule {
+			return false
+		}
+	}
+	return true
 }

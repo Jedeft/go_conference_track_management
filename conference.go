@@ -25,10 +25,9 @@ func getScheduleConferences(talks Talks) Conferences {
 		conferences.setMorningSession(talks)
 		conferences.setAfternoonSession(talks)
 	}
-
-	if len(talks) != 0 {
+	if !talks.isSchedule() {
 		conferences.checkSession(talks)
-		if len(talks) != 0 {
+		if !talks.isSchedule() {
 			panic(errors.New("input talks can not compose the conferences"))
 		}
 	}
@@ -95,6 +94,14 @@ func (conferences Conferences) setAfternoonSession(talks Talks) {
 	}
 }
 
-// TODO: check session and append remaining talks
+// check session and append remaining talks
 func (conferences Conferences) checkSession(talks Talks) {
+	for ci := range conferences {
+		for _, talk := range talks {
+			if conferences[ci].AfternoonSession.getTotalDuration()+talk.Duration <= sessionMaxDuration {
+				conferences[ci].AfternoonSession = append(conferences[ci].AfternoonSession, talk)
+				talks.setSchedule(Talks{talk})
+			}
+		}
+	}
 }
