@@ -35,17 +35,40 @@ func getScheduleConferences(talks Talks) Conferences {
 	return conferences
 }
 
-// TODO: set possibale MorningSession
-func (conferences Conferences) setMorningSession(talks Talks) error {
-	return nil
+// setMorningSession set possibale MorningSession
+func (conferences Conferences) setMorningSession(talks Talks) {
+	for ci := range conferences {
+		for ti := range talks {
+			var morningSession Talks
+			var totalDuration int
+			for tj := ti; tj < len(talks); tj++ {
+				currentIndex := tj
+				if talks[currentIndex].IsSchedule {
+					continue
+				}
+				if talks[currentIndex].Duration > sessionMinDuration ||
+					talks[currentIndex].Duration+totalDuration > sessionMaxDuration {
+					continue
+				}
+				morningSession = append(morningSession, talks[currentIndex])
+				totalDuration += talks[currentIndex].Duration
+				if totalDuration == sessionMinDuration {
+					break
+				}
+			}
+			if totalDuration == morningSession.getTotalDuration() {
+				conferences[ci].MorningSession = morningSession
+				talks.setSchedule(morningSession)
+				break
+			}
+		}
+	}
 }
 
 // TODO: set possibale AfternoonSession
-func (conferences Conferences) setAfternoonSession(talks Talks) error {
-	return nil
+func (conferences Conferences) setAfternoonSession(talks Talks) {
 }
 
 // TODO: check session and append remaining talks
 func (conferences Conferences) checkSession(talks Talks) {
-
 }

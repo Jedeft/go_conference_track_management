@@ -44,3 +44,15 @@ func (talks Talks) getTotalDuration() int {
 	}
 	return totalDuration
 }
+
+func (talks Talks) setSchedule(scheduleTalks Talks) {
+	scheduleMap := make(map[string]bool, len(scheduleTalks))
+	for _, scheduleTalk := range scheduleTalks {
+		scheduleMap[scheduleTalk.Topic] = true
+	}
+	for _, talk := range talks {
+		if _, exist := scheduleMap[talk.Topic]; exist {
+			talk.IsSchedule = true
+		}
+	}
+}
