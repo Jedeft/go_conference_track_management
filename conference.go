@@ -65,8 +65,34 @@ func (conferences Conferences) setMorningSession(talks Talks) {
 	}
 }
 
-// TODO: set possibale AfternoonSession
+// setAfternoonSession set possibale AfternoonSession
 func (conferences Conferences) setAfternoonSession(talks Talks) {
+	for ci := range conferences {
+		for ti := range talks {
+			var afternoonSession Talks
+			var totalDuration int
+			for tj := ti; tj < len(talks); tj++ {
+				currentIndex := tj
+				if talks[currentIndex].IsSchedule {
+					continue
+				}
+				if talks[currentIndex].Duration > sessionMinDuration ||
+					talks[currentIndex].Duration+totalDuration > sessionMaxDuration {
+					continue
+				}
+				afternoonSession = append(afternoonSession, talks[currentIndex])
+				totalDuration += talks[currentIndex].Duration
+				if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration {
+					break
+				}
+			}
+			if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration {
+				conferences[ci].AfternoonSession = afternoonSession
+				talks.setSchedule(afternoonSession)
+				break
+			}
+		}
+	}
 }
 
 // TODO: check session and append remaining talks
