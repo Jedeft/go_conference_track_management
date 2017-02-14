@@ -17,6 +17,7 @@ type Conferences []Conference
 
 const (
 	dayMaxDuration     = 420
+	dayMinDuration     = 360
 	sessionMinDuration = 180
 	sessionMaxDuration = 240
 )
@@ -48,16 +49,18 @@ func (conferences Conferences) setMorningSession(talks Talks) {
 					continue
 				}
 				if talks[currentIndex].Duration > sessionMinDuration ||
-					talks[currentIndex].Duration+totalDuration > sessionMaxDuration {
+					talks[currentIndex].Duration+totalDuration > sessionMinDuration {
 					continue
 				}
 				morningSession = append(morningSession, talks[currentIndex])
 				totalDuration += talks[currentIndex].Duration
-				if totalDuration == sessionMinDuration {
+				if totalDuration == sessionMinDuration ||
+					(len(conferences) == 1 && talks.getTotalDuration() < sessionMinDuration) {
 					break
 				}
 			}
-			if totalDuration == sessionMinDuration {
+			if totalDuration == sessionMinDuration ||
+				(len(conferences) == 1 && talks.getTotalDuration() < sessionMinDuration) {
 				conferences[ci].MorningSession = morningSession
 				talks.setSchedule(morningSession)
 				break
@@ -77,17 +80,19 @@ func (conferences Conferences) setAfternoonSession(talks Talks) {
 				if talks[currentIndex].IsSchedule {
 					continue
 				}
-				if talks[currentIndex].Duration > sessionMinDuration ||
+				if talks[currentIndex].Duration > sessionMaxDuration ||
 					talks[currentIndex].Duration+totalDuration > sessionMaxDuration {
 					continue
 				}
 				afternoonSession = append(afternoonSession, talks[currentIndex])
 				totalDuration += talks[currentIndex].Duration
-				if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration {
+				if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration ||
+					(len(conferences) == 1 && talks.getTotalDuration() < dayMinDuration) {
 					break
 				}
 			}
-			if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration {
+			if totalDuration >= sessionMinDuration && totalDuration <= sessionMaxDuration ||
+				(len(conferences) == 1 && talks.getTotalDuration() < dayMinDuration) {
 				conferences[ci].AfternoonSession = afternoonSession
 				talks.setSchedule(afternoonSession)
 				break
