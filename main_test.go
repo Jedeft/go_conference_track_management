@@ -10,9 +10,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestSystem(t *testing.T) {
-	os.Args[1] = "noFile.txt"
+	// no os.Args
 	main()
-	os.Args = make([]string, 1)
+	// fail os.Args
+	os.Args = append(os.Args, "noFile.txt")
+	main()
+	// success os.Args
+	os.Args[1] = "input.txt"
 	main()
 }
 
