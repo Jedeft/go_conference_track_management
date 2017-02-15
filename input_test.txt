@@ -1,0 +1,3 @@
+Writing Fast Tests Against Enterprise Rails 36min
+Overdoing it in Python testmin
+Rails for Python Developers lightning

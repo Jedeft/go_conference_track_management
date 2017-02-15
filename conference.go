@@ -22,19 +22,19 @@ const (
 	sessionMaxDuration = 240
 )
 
-func getScheduleConferences(talks Talks) Conferences {
+func getScheduleConferences(talks Talks) (conferences Conferences, err error) {
 	totalDuration := talks.getTotalDuration()
 	totalDay := totalDuration/dayMaxDuration + 1
-	conferences := make(Conferences, totalDay)
+	conferences = make(Conferences, totalDay)
 	conferences.setMorningSession(talks)
 	conferences.setAfternoonSession(talks)
 	if !talks.isSchedule() {
 		conferences.checkSession(talks)
 		if !talks.isSchedule() {
-			panic(errors.New("input talks can not compose the conferences"))
+			return nil, errors.New("input talks can not compose the conferences")
 		}
 	}
-	return conferences
+	return conferences, nil
 }
 
 // setMorningSession set possibale MorningSession

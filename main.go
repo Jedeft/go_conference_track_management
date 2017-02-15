@@ -2,33 +2,30 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 func main() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Error(err)
-		}
-	}()
 	if len(os.Args) < 2 {
 		fmt.Println("Please input one fileName")
-		os.Exit(1)
+		return
 	}
-	scheduleConference(os.Args[1])
+	if err := scheduleConference(os.Args[1]); err != nil {
+		log.Print(err)
+	}
 }
 
-func scheduleConference(filePath string) {
+func scheduleConference(filePath string) error {
 	data, err := loadFile(filePath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	talks, err := fillTalks(data)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	conferences := getScheduleConferences(talks)
+	conferences, err := getScheduleConferences(talks)
 	conferences.output()
+	return err
 }

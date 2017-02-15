@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -34,6 +35,9 @@ func fillTalks(data []byte) (talks Talks, err error) {
 			talks[i].Duration = lightning
 		}
 	}
+	if !sort.IsSorted(talks) {
+		sort.Sort(talks)
+	}
 	return talks, nil
 }
 
@@ -65,4 +69,19 @@ func (talks Talks) isSchedule() bool {
 		}
 	}
 	return true
+}
+
+// Len implement sort interface
+func (talks Talks) Len() int {
+	return len(talks)
+}
+
+// Less implement sort interface
+func (talks Talks) Less(i, j int) bool {
+	return talks[i].Duration > talks[j].Duration
+}
+
+// Swap implement sort interface
+func (talks Talks) Swap(i, j int) {
+	talks[i], talks[j] = talks[j], talks[i]
 }

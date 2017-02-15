@@ -3,8 +3,11 @@ package main
 import "testing"
 
 func TestLoadFile(t *testing.T) {
-	_, err := loadFile("input.txt")
-	if err != nil {
+	if _, err := loadFile("input.txt"); err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+	if _, err := loadFile("noFile.txt"); err == nil {
 		t.Log(err)
 		t.Fail()
 	}
